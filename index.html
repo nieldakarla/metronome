@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Metronome</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Metronome</h1>
+        <p class="subtitle">Simple, precise, and keyboard-friendly</p>
+      </header>
+
+      <section class="controls" aria-label="Metronome controls">
+        <div class="tempo">
+          <label for="bpm">Tempo (BPM)</label>
+          <div class="tempo-inputs">
+            <button id="decrease" class="square" aria-label="Decrease tempo" title="Decrease tempo (↓)">−</button>
+            <input type="range" id="bpm" min="20" max="240" step="1" value="100" aria-valuemin="20" aria-valuemax="240" aria-valuenow="100" />
+            <button id="increase" class="square" aria-label="Increase tempo" title="Increase tempo (↑)">+</button>
+          </div>
+          <div class="tempo-display">
+            <input id="bpmNumber" type="number" min="20" max="240" step="1" value="100" aria-label="BPM number" />
+            <span class="unit">BPM</span>
+          </div>
+        </div>
+
+        <div class="signature">
+          <label for="beats">Time Signature</label>
+          <div class="sig-row">
+            <select id="beats" aria-label="Beats per bar">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+            <span class="slash">/</span>
+            <select id="note" aria-label="Beat note value">
+              <option value="2">2</option>
+              <option value="4" selected>4</option>
+              <option value="8">8</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="toggles">
+          <label class="switch">
+            <input id="accent" type="checkbox" checked />
+            <span>Accent first beat</span>
+          </label>
+          <label class="switch">
+            <input id="subdivision" type="checkbox" />
+            <span>Subdivide (eighths)</span>
+          </label>
+          <button id="themeToggle" class="icon" aria-pressed="false" title="Switch to light theme" aria-label="Switch to light theme">
+            <span class="icon-sun" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" role="img" aria-label="Light">
+                <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zm10.48 0l1.79-1.8-1.41-1.41-1.8 1.79 1.42 1.42zM12 4V1h-2v3h2zm0 19v-3h-2v3h2zm9-9h-3v2h3v-2zM6 14H3v2h3v-2zm12.24 5.16l1.8 1.79 1.41-1.41-1.79-1.8-1.42 1.42zM5.17 17.74l-1.79 1.8 1.41 1.41 1.8-1.79-1.42-1.42zM20 12a8 8 0 11-16 0 8 8 0 0116 0z"/>
+              </svg>
+            </span>
+            <span class="icon-moon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" role="img" aria-label="Dark">
+                <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+
+        <div class="actions">
+          <button id="startStop" class="primary" aria-pressed="false">Start</button>
+          <button id="tap" class="ghost" title="Tap tempo (T)">Tap</button>
+          <button id="reset" class="ghost" title="Reset settings">Reset</button>
+        </div>
+      </section>
+
+      <section class="visual" aria-label="Beat indicator">
+        <div id="pips" class="pips" aria-hidden="true"></div>
+      </section>
+
+      <footer>
+        <p>
+          Keyboard: Space (start/stop), T (tap), ↑/↓ (tempo), ←/→ (fine tempo)
+        </p>
+      </footer>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+  </html>

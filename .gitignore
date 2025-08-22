@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env / local
+.env
+.env.*
+
+# Builds / tools
+dist/
+build/
+coverage/
+.cache/
+.parcel-cache/
+
+# Node (if added later)
+node_modules/
+
