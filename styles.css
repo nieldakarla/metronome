@@ -85,7 +85,7 @@ header h1 { margin: 0 0 4px; font-size: 28px; }
 label { color: var(--muted); display: block; margin-bottom: 8px; }
 
 .sig-row { display: flex; align-items: center; gap: 8px; }
-select, input[type="number"] {
+select, input[type="number"] { /* legacy, kept for number input */
   background: var(--input-bg); color: var(--text); border: 1px solid var(--control-border);
   padding: 10px 12px; border-radius: 8px; min-width: 72px;
 }
@@ -136,8 +136,27 @@ input[type="range"]::-moz-range-thumb {
 .pip.sub { background: var(--pip-sub); opacity: 0.55; }
 [data-theme="light"] .pip.active { background: var(--primary); box-shadow: 0 0 0 6px var(--primary-ambient); }
 
+/* Subdivision mode buttons */
+.feel { display: flex; flex-direction: column; gap: 8px; }
+.modes { display: flex; gap: 8px; flex-wrap: wrap; }
+.mode-btn {
+  min-width: 44px; height: 44px; padding: 0 10px; border-radius: 10px;
+  background: var(--input-bg); color: var(--text); border: 1px solid var(--control-border);
+  cursor: pointer; font-weight: 600; display: grid; place-items: center;
+}
+.mode-btn[aria-pressed="true"] {
+  background: var(--primary); color: #fff; border-color: var(--primary-strong);
+}
+
+/* Timer */
+.timer { display: flex; align-items: baseline; gap: 10px; padding-top: 4px; }
+.timer-label { color: var(--muted); font-size: 12px; }
+.timer-value { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 600; }
+
 footer { margin-top: 24px; color: var(--muted); }
 
+.measure .stepper { display: grid; grid-template-columns: 44px 1fr 44px; gap: 10px; align-items: center; }
+.measure input[type="number"] { text-align: center; }
 button:focus, input:focus, select:focus { outline: 2px solid var(--ring); outline-offset: 2px; }
 
 @media (max-width: 640px) {

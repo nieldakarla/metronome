@@ -27,25 +27,23 @@
           </div>
         </div>
 
-        <div class="signature">
-          <label for="beats">Time Signature</label>
-          <div class="sig-row">
-            <select id="beats" aria-label="Beats per bar">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4" selected>4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-            </select>
-            <span class="slash">/</span>
-            <select id="note" aria-label="Beat note value">
-              <option value="2">2</option>
-              <option value="4" selected>4</option>
-              <option value="8">8</option>
-            </select>
+        <div class="feel">
+          <label>Subdivision</label>
+          <div class="modes" role="group" aria-label="Subdivision mode">
+            <button class="mode-btn" data-mode="quarter" aria-pressed="true" title="Quarter notes (♩)" aria-label="Quarter notes">♩</button>
+            <button class="mode-btn" data-mode="eighths" aria-pressed="false" title="Eighth notes (♪)" aria-label="Eighth notes">♪</button>
+            <button class="mode-btn" data-mode="sixteenths" aria-pressed="false" title="Sixteenth notes (♬)" aria-label="Sixteenth notes">♬</button>
+            <button class="mode-btn" data-mode="triplets" aria-pressed="false" title="Triplets (3)" aria-label="Triplets">3</button>
+            <button class="mode-btn" data-mode="swing" aria-pressed="false" title="Swing triplet" aria-label="Swing triplet">Sw</button>
+          </div>
+        </div>
+
+        <div class="measure">
+          <label for="beatsNumber">Beats per measure</label>
+          <div class="stepper">
+            <button id="beatsDec" class="square" aria-label="Decrease beats">−</button>
+            <input id="beatsNumber" type="number" min="1" max="12" step="1" value="4" aria-label="Beats per measure" />
+            <button id="beatsInc" class="square" aria-label="Increase beats">+</button>
           </div>
         </div>
 
@@ -53,10 +51,6 @@
           <label class="switch">
             <input id="accent" type="checkbox" checked />
             <span>Accent first beat</span>
-          </label>
-          <label class="switch">
-            <input id="subdivision" type="checkbox" />
-            <span>Subdivide (eighths)</span>
           </label>
           <button id="themeToggle" class="icon" aria-pressed="false" title="Switch to light theme" aria-label="Switch to light theme">
             <span class="icon-sun" aria-hidden="true">
@@ -76,6 +70,11 @@
           <button id="startStop" class="primary" aria-pressed="false">Start</button>
           <button id="tap" class="ghost" title="Tap tempo (T)">Tap</button>
           <button id="reset" class="ghost" title="Reset settings">Reset</button>
+        </div>
+
+        <div class="timer" aria-live="polite" aria-atomic="true">
+          <span class="timer-label">Elapsed</span>
+          <span id="elapsed" class="timer-value">00:00</span>
         </div>
       </section>
 

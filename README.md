@@ -9,7 +9,9 @@ A lightweight, precise metronome that runs entirely in the browser using the Web
 
 - Precise Web Audio ticks with short envelopes
 - Tempo: 20–240 BPM with slider and number input
-- Time signature: configurable beats per bar and note value
+- Subdivision modes: quarter, eighths, sixteenths, triplets, swing triplet
+- Adjustable beats per measure (1–12)
+- Elapsed timer that runs with playback
 - Accent first beat (toggle)
 - Optional eighth-note subdivision
 - Tap tempo (averages recent taps)

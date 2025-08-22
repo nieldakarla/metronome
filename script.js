@@ -5,15 +5,17 @@
     bpmNumber: document.getElementById('bpmNumber'),
     dec: document.getElementById('decrease'),
     inc: document.getElementById('increase'),
-    beats: document.getElementById('beats'),
-    note: document.getElementById('note'),
     accent: document.getElementById('accent'),
-    subdiv: document.getElementById('subdivision'),
+    modeButtons: Array.from(document.querySelectorAll('.mode-btn')),
+    beatsNumber: document.getElementById('beatsNumber'),
+    beatsDec: document.getElementById('beatsDec'),
+    beatsInc: document.getElementById('beatsInc'),
     themeToggle: document.getElementById('themeToggle'),
     startStop: document.getElementById('startStop'),
     tap: document.getElementById('tap'),
     reset: document.getElementById('reset'),
-    pips: document.getElementById('pips')
+    pips: document.getElementById('pips'),
+    elapsed: document.getElementById('elapsed')
   };
 
   const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
@@ -23,19 +25,17 @@
     try {
       const s = JSON.parse(localStorage.getItem('metronome-settings') || '{}');
       if (s.bpm) setBpm(s.bpm);
-      if (s.beats) el.beats.value = String(s.beats);
-      if (s.note) el.note.value = String(s.note);
       if (typeof s.accent === 'boolean') el.accent.checked = s.accent;
-      if (typeof s.subdiv === 'boolean') el.subdiv.checked = s.subdiv;
+      if (s.mode) setMode(s.mode);
+      if (s.beats) setBeats(s.beats);
     } catch {}
   };
   const save = () => {
     const s = {
       bpm: current.bpm,
-      beats: parseInt(el.beats.value, 10),
-      note: parseInt(el.note.value, 10),
       accent: el.accent.checked,
-      subdiv: el.subdiv.checked
+      mode: current.mode,
+      beats: current.beats
     };
     localStorage.setItem('metronome-settings', JSON.stringify(s));
   };
@@ -70,7 +70,9 @@
     bpm: 100,
     running: false,
     beatInBar: 0,
-    lastTapTimes: []
+    lastTapTimes: [],
+    mode: 'quarter',
+    beats: 4
   };
 
   function ensureAudio() {
@@ -81,10 +83,8 @@
   }
 
   function secondsPerBeat() {
-    // Convert note value (e.g., quarter=4, eighth=8) into beat duration
-    const base = 60 / current.bpm; // quarter note duration
-    const noteVal = parseInt(el.note.value, 10);
-    return base * (4 / noteVal);
+    // Base beat is a quarter note at the given BPM
+    return 60 / current.bpm;
   }
 
   function click(time, { accent = false, sub = false } = {}) {
@@ -118,13 +118,27 @@
       // Visual pulse synced to main beats
       scheduleVisual(audio.nextTick, current.beatInBar);
 
-      // Subdivision (eighth notes)
-      if (el.subdiv.checked) {
-        const subTime = audio.nextTick + sPerBeat / 2;
-        click(subTime, { sub: true });
-      }
+      // Subdivisions by mode
+      scheduleSubdivisions(current.mode, audio.nextTick, sPerBeat);
 
       advanceBeat(sPerBeat);
+    }
+  }
+
+  function scheduleSubdivisions(mode, baseTime, sPerBeat) {
+    const add = (offset) => click(baseTime + offset, { sub: true });
+    if (mode === 'eighths') {
+      add(sPerBeat / 2);
+    } else if (mode === 'sixteenths') {
+      add(sPerBeat / 4);
+      add(sPerBeat / 2);
+      add((3 * sPerBeat) / 4);
+    } else if (mode === 'triplets') {
+      add(sPerBeat / 3);
+      add((2 * sPerBeat) / 3);
+    } else if (mode === 'swing') {
+      // Swing eighths: off-beat at ~2/3 of the beat (triplet swing)
+      add((2 * sPerBeat) / 3);
     }
   }
 
@@ -136,7 +150,7 @@
   }
 
   function advanceBeat(sPerBeat) {
-    const beatsInBar = parseInt(el.beats.value, 10);
+    const beatsInBar = current.beats;
     current.beatInBar = (current.beatInBar + 1) % beatsInBar;
     audio.nextTick += sPerBeat;
   }
@@ -187,7 +201,7 @@
   }
 
   function rebuildPips() {
-    const beatsInBar = parseInt(el.beats.value, 10);
+    const beatsInBar = current.beats;
     el.pips.innerHTML = '';
     for (let i = 0; i < beatsInBar; i++) {
       const d = document.createElement('div');
@@ -242,10 +256,45 @@
   });
   el.inc.addEventListener('click', () => setBpm(current.bpm + 1));
   el.dec.addEventListener('click', () => setBpm(current.bpm - 1));
-  el.beats.addEventListener('change', () => { rebuildPips(); save(); });
-  el.note.addEventListener('change', () => save());
   el.accent.addEventListener('change', () => { rebuildPips(); save(); });
-  el.subdiv.addEventListener('change', () => save());
+  // Mode buttons (radio-like behavior)
+  function setMode(mode) {
+    if (!mode) return;
+    current.mode = mode;
+    el.modeButtons.forEach(btn => {
+      const on = btn.dataset.mode === mode;
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    save();
+  }
+  el.modeButtons.forEach(btn => {
+    btn.addEventListener('click', () => setMode(btn.dataset.mode));
+  });
+
+  // Beats per measure
+  function setBeats(v) {
+    const n = clamp(Math.round(Number(v) || 0), 1, 12);
+    current.beats = n;
+    if (el.beatsNumber) el.beatsNumber.value = String(n);
+    rebuildPips();
+    save();
+  }
+  if (el.beatsNumber) {
+    el.beatsNumber.addEventListener('input', e => {
+      // allow empty input temporarily
+      if (e.target.value === '') return;
+    });
+    const commitBeats = () => {
+      const v = el.beatsNumber.value.trim();
+      if (v === '') { el.beatsNumber.value = String(current.beats); return; }
+      setBeats(v);
+    };
+    el.beatsNumber.addEventListener('change', commitBeats);
+    el.beatsNumber.addEventListener('blur', commitBeats);
+    el.beatsNumber.addEventListener('keydown', e => { if (e.key === 'Enter') { commitBeats(); el.beatsNumber.blur(); } });
+    if (el.beatsDec) el.beatsDec.addEventListener('click', () => setBeats(current.beats - 1));
+    if (el.beatsInc) el.beatsInc.addEventListener('click', () => setBeats(current.beats + 1));
+  }
   if (el.themeToggle) {
     el.themeToggle.addEventListener('click', () => {
       const currentTheme = document.documentElement.getAttribute('data-theme') || getPreferredTheme();
@@ -256,12 +305,11 @@
   el.tap.addEventListener('click', handleTap);
   el.reset.addEventListener('click', () => {
     setBpm(100);
-    el.beats.value = '4';
-    el.note.value = '4';
     el.accent.checked = true;
-    el.subdiv.checked = false;
+    setMode('quarter');
+    setBeats(4);
     if (el.themeToggle) el.themeToggle.setAttribute('aria-pressed', getPreferredTheme() === 'light' ? 'true' : 'false');
-    rebuildPips();
+    timerReset();
     save();
   });
 
@@ -281,7 +329,9 @@
     setTheme(getPreferredTheme());
     setBpm(Number(el.bpmSlider.value));
     load();
-    rebuildPips();
+    // Ensure one mode active even if no saved state
+    setMode(current.mode || 'quarter');
+    setBeats(current.beats || 4);
     // Prepare AudioContext on first user gesture (start/click) automatically
     ['click','keydown','touchstart'].forEach(evt => {
       window.addEventListener(evt, ensureAudio, { once: true, passive: true });
@@ -298,4 +348,48 @@
   }
 
   init();
+
+  // Timer (elapsed)
+  const timer = { running: false, baseMs: 0, startTs: 0, raf: 0 };
+  function formatTime(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const s = total % 60;
+    const m = Math.floor(total / 60) % 60;
+    const h = Math.floor(total / 3600);
+    const z = n => String(n).padStart(2, '0');
+    return h > 0 ? `${z(h)}:${z(m)}:${z(s)}` : `${z(m)}:${z(s)}`;
+  }
+  function timerUpdate() {
+    if (!el.elapsed) return;
+    const now = performance.now();
+    const elapsed = timer.baseMs + (timer.running ? (now - timer.startTs) : 0);
+    el.elapsed.textContent = formatTime(elapsed);
+    if (timer.running) timer.raf = requestAnimationFrame(timerUpdate);
+  }
+  function timerStart() {
+    if (timer.running) return;
+    timer.running = true;
+    timer.startTs = performance.now();
+    cancelAnimationFrame(timer.raf);
+    timer.raf = requestAnimationFrame(timerUpdate);
+  }
+  function timerStop() {
+    if (!timer.running) return;
+    timer.running = false;
+    timer.baseMs += performance.now() - timer.startTs;
+    cancelAnimationFrame(timer.raf);
+    timerUpdate();
+  }
+  function timerReset() {
+    timer.running = false;
+    timer.baseMs = 0;
+    timer.startTs = 0;
+    cancelAnimationFrame(timer.raf);
+    timerUpdate();
+  }
+
+  // Integrate timer with transport
+  const _start = start, _stop = stop;
+  start = function() { _start(); timerStart(); };
+  stop = function() { _stop(); timerStop(); };
 })();
