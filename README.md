@@ -1,5 +1,8 @@
 # Metronome (HTML/CSS/JS)
 
+[![GitHub Pages – Live](https://img.shields.io/badge/GitHub%20Pages-Live-7c3aed?logo=github)](https://nieldakarla.github.io/metronome/)
+
+
 A lightweight, precise metronome that runs entirely in the browser using the Web Audio API. No dependencies.
 
 ## Features
@@ -19,6 +22,10 @@ A lightweight, precise metronome that runs entirely in the browser using the Web
 - Option 1: Just open `index.html` in your browser.
 - Option 2: Serve the folder using any static server, e.g. Python:
   - `python3 -m http.server 8000` then visit `http://localhost:8000/`
+
+## Live Site
+
+- https://nieldakarla.github.io/metronome/
 
 Most browsers require a user interaction to start audio. Click Start or press Space once if you see no sound initially.
 
