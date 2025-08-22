@@ -14,6 +14,20 @@
       </header>
 
       <section class="controls" aria-label="Metronome controls">
+        <div class="topbar">
+          <button id="themeToggle" class="icon" aria-pressed="false" title="Switch to light theme" aria-label="Switch to light theme">
+            <span class="icon-sun" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" role="img" aria-label="Light">
+                <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zm10.48 0l1.79-1.8-1.41-1.41-1.8 1.79 1.42 1.42zM12 4V1h-2v3h2zm0 19v-3h-2v3h2zm9-9h-3v2h3v-2zM6 14H3v2h3v-2zm12.24 5.16l1.8 1.79 1.41-1.41-1.79-1.8-1.42 1.42zM5.17 17.74l-1.79 1.8 1.41 1.41 1.8-1.79-1.42-1.42zM20 12a8 8 0 11-16 0 8 8 0 0116 0z"/>
+              </svg>
+            </span>
+            <span class="icon-moon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" role="img" aria-label="Dark">
+                <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
+              </svg>
+            </span>
+          </button>
+        </div>
         <div class="tempo">
           <label for="bpm">Tempo (BPM)</label>
           <div class="tempo-inputs">
@@ -52,33 +66,21 @@
             <input id="accent" type="checkbox" checked />
             <span>Accent first beat</span>
           </label>
-          <button id="themeToggle" class="icon" aria-pressed="false" title="Switch to light theme" aria-label="Switch to light theme">
-            <span class="icon-sun" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" role="img" aria-label="Light">
-                <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zm10.48 0l1.79-1.8-1.41-1.41-1.8 1.79 1.42 1.42zM12 4V1h-2v3h2zm0 19v-3h-2v3h2zm9-9h-3v2h3v-2zM6 14H3v2h3v-2zm12.24 5.16l1.8 1.79 1.41-1.41-1.79-1.8-1.42 1.42zM5.17 17.74l-1.79 1.8 1.41 1.41 1.8-1.79-1.42-1.42zM20 12a8 8 0 11-16 0 8 8 0 0116 0z"/>
-              </svg>
-            </span>
-            <span class="icon-moon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" role="img" aria-label="Dark">
-                <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
-              </svg>
-            </span>
-          </button>
         </div>
 
         <div class="actions">
           <button id="startStop" class="primary" aria-pressed="false">Start</button>
           <button id="tap" class="ghost" title="Tap tempo (T)">Tap</button>
-          <button id="reset" class="ghost" title="Reset settings">Reset</button>
         </div>
 
         <div class="timer">
-          <span class="timer-label">Elapsed</span>
+          <span class="timer-label">Timer</span>
           <div class="timer-stepper" role="group" aria-label="Timer control">
             <button id="timerDec" class="square" aria-label="Decrease time">−</button>
             <span id="elapsed" class="timer-value" aria-live="polite" aria-atomic="true">00:00</span>
             <button id="timerInc" class="square" aria-label="Increase time">+</button>
           </div>
+          <button id="reset" class="ghost" title="Reset settings">Reset</button>
         </div>
       </section>
 

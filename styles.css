@@ -76,6 +76,8 @@ header h1 { margin: 0 0 4px; font-size: 28px; }
   gap: 16px;
 }
 
+.topbar { grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-bottom: 4px; }
+
 .tempo { grid-column: 1 / -1; }
 .tempo-inputs { display: grid; grid-template-columns: 48px 1fr 48px; gap: 10px; align-items: center; }
 .tempo-display { margin-top: 10px; display: flex; align-items: center; gap: 8px; }

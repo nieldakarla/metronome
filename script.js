@@ -321,10 +321,26 @@
     save();
   });
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts (avoid interfering while typing/focusing inputs)
   window.addEventListener('keydown', (e) => {
-    if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); toggle(); }
-    else if (e.key.toLowerCase() === 't') { handleTap(); }
+    const ae = document.activeElement;
+    const tag = ae && ae.tagName;
+    const isFormEl = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    const isEditable = ae && ae.isContentEditable;
+
+    // Space: toggle only when not focused on start/stop button or form fields
+    if (e.key === ' ' || e.code === 'Space') {
+      if (ae === el.startStop) return; // let the button handle it
+      if (isFormEl || isEditable) return; // don't hijack typing
+      e.preventDefault();
+      toggle();
+      return;
+    }
+
+    // Ignore other shortcuts while typing in form fields
+    if (isFormEl || isEditable) return;
+
+    if (e.key.toLowerCase && e.key.toLowerCase() === 't') { handleTap(); }
     else if (e.key === 'ArrowUp') { setBpm(current.bpm + 1); }
     else if (e.key === 'ArrowDown') { setBpm(current.bpm - 1); }
     else if (e.key === 'ArrowRight') { setBpm(current.bpm + 0.1); }
@@ -373,7 +389,8 @@
   }
   function updateTimerLabel() {
     if (!el.timerLabelEl) return;
-    el.timerLabelEl.textContent = timer.targetMs > 0 ? 'Remaining' : 'Elapsed';
+    // Always show "Timer" as label
+    el.timerLabelEl.textContent = 'Timer';
   }
   function timerUpdate() {
     if (!el.elapsed) return;
