@@ -72,9 +72,13 @@
           <button id="reset" class="ghost" title="Reset settings">Reset</button>
         </div>
 
-        <div class="timer" aria-live="polite" aria-atomic="true">
+        <div class="timer">
           <span class="timer-label">Elapsed</span>
-          <span id="elapsed" class="timer-value">00:00</span>
+          <div class="timer-stepper" role="group" aria-label="Timer control">
+            <button id="timerDec" class="square" aria-label="Decrease time">−</button>
+            <span id="elapsed" class="timer-value" aria-live="polite" aria-atomic="true">00:00</span>
+            <button id="timerInc" class="square" aria-label="Increase time">+</button>
+          </div>
         </div>
       </section>
 

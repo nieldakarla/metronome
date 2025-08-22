@@ -149,9 +149,10 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* Timer */
-.timer { display: flex; align-items: baseline; gap: 10px; padding-top: 4px; }
+.timer { display: flex; align-items: center; gap: 12px; padding-top: 4px; }
 .timer-label { color: var(--muted); font-size: 12px; }
-.timer-value { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 600; }
+.timer-stepper { display: inline-flex; align-items: center; gap: 10px; }
+.timer-value { min-width: 72px; text-align: center; font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 700; }
 
 footer { margin-top: 24px; color: var(--muted); }
 

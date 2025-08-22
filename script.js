@@ -10,6 +10,9 @@
     beatsNumber: document.getElementById('beatsNumber'),
     beatsDec: document.getElementById('beatsDec'),
     beatsInc: document.getElementById('beatsInc'),
+    timerDec: document.getElementById('timerDec'),
+    timerInc: document.getElementById('timerInc'),
+    timerLabelEl: document.querySelector('.timer-label'),
     themeToggle: document.getElementById('themeToggle'),
     startStop: document.getElementById('startStop'),
     tap: document.getElementById('tap'),
@@ -28,6 +31,7 @@
       if (typeof s.accent === 'boolean') el.accent.checked = s.accent;
       if (s.mode) setMode(s.mode);
       if (s.beats) setBeats(s.beats);
+      if (typeof s.timerTargetMs === 'number') setTimerTarget(s.timerTargetMs);
     } catch {}
   };
   const save = () => {
@@ -35,7 +39,8 @@
       bpm: current.bpm,
       accent: el.accent.checked,
       mode: current.mode,
-      beats: current.beats
+      beats: current.beats,
+      timerTargetMs: timer.targetMs
     };
     localStorage.setItem('metronome-settings', JSON.stringify(s));
   };
@@ -74,6 +79,9 @@
     mode: 'quarter',
     beats: 4
   };
+
+  // Timer state declared early so save() can reference it safely
+  const timer = { running: false, baseMs: 0, startTs: 0, raf: 0, targetMs: 0 };
 
   function ensureAudio() {
     if (!audio.ctx) {
@@ -349,8 +357,7 @@
 
   init();
 
-  // Timer (elapsed)
-  const timer = { running: false, baseMs: 0, startTs: 0, raf: 0 };
+  // Timer (elapsed / countdown)
   function formatTime(ms) {
     const total = Math.max(0, Math.floor(ms / 1000));
     const s = total % 60;
@@ -359,11 +366,29 @@
     const z = n => String(n).padStart(2, '0');
     return h > 0 ? `${z(h)}:${z(m)}:${z(s)}` : `${z(m)}:${z(s)}`;
   }
+  function setTimerTarget(ms) {
+    timer.targetMs = Math.max(0, Math.floor(ms || 0));
+    updateTimerLabel();
+    timerUpdate();
+  }
+  function updateTimerLabel() {
+    if (!el.timerLabelEl) return;
+    el.timerLabelEl.textContent = timer.targetMs > 0 ? 'Remaining' : 'Elapsed';
+  }
   function timerUpdate() {
     if (!el.elapsed) return;
     const now = performance.now();
-    const elapsed = timer.baseMs + (timer.running ? (now - timer.startTs) : 0);
-    el.elapsed.textContent = formatTime(elapsed);
+    const progress = timer.baseMs + (timer.running ? (now - timer.startTs) : 0);
+    if (timer.targetMs > 0) {
+      const remaining = Math.max(0, timer.targetMs - progress);
+      el.elapsed.textContent = formatTime(remaining);
+      if (timer.running && remaining <= 0) {
+        stop(); // stop metronome and timer when countdown finishes
+        return;
+      }
+    } else {
+      el.elapsed.textContent = formatTime(progress);
+    }
     if (timer.running) timer.raf = requestAnimationFrame(timerUpdate);
   }
   function timerStart() {
@@ -392,4 +417,19 @@
   const _start = start, _stop = stop;
   start = function() { _start(); timerStart(); };
   stop = function() { _stop(); timerStop(); };
+  // Timer stepper interactions
+  const TIMER_STEP_MS = 15000; // 15 seconds per step
+  const TIMER_MAX_MS = 99 * 60 * 1000 + 59 * 1000; // 99:59
+  function stepTimer(deltaMs) {
+    const now = performance.now();
+    // Calculate current progress (do not lose elapsed when running)
+    const progress = timer.baseMs + (timer.running ? (now - timer.startTs) : 0);
+    const nextTarget = Math.min(TIMER_MAX_MS, Math.max(0, (timer.targetMs || 0) + deltaMs));
+    setTimerTarget(nextTarget);
+    // Keep the display consistent after changing target
+    timerUpdate();
+    save();
+  }
+  if (el.timerDec) el.timerDec.addEventListener('click', () => stepTimer(-TIMER_STEP_MS));
+  if (el.timerInc) el.timerInc.addEventListener('click', () => stepTimer(+TIMER_STEP_MS));
 })();
