@@ -356,6 +356,8 @@
     // Ensure one mode active even if no saved state
     setMode(current.mode || 'quarter');
     setBeats(current.beats || 4);
+    // Scale ASCII logo to fit container
+    setupAsciiScaling();
     // Prepare AudioContext on first user gesture (start/click) automatically
     ['click','keydown','touchstart'].forEach(evt => {
       window.addEventListener(evt, ensureAudio, { once: true, passive: true });
@@ -434,6 +436,32 @@
   const _start = start, _stop = stop;
   start = function() { _start(); timerStart(); };
   stop = function() { _stop(); timerStop(); };
+
+  // ASCII logo responsive scaling
+  function setupAsciiScaling() {
+    const wrap = document.querySelector('.ascii-wrap');
+    const pre = document.querySelector('.ascii-logo');
+    if (!wrap || !pre) return;
+    const resize = () => {
+      // Reset transform to measure natural size
+      pre.style.transform = 'none';
+      // Force layout to update
+      void pre.offsetWidth;
+      const wrapW = wrap.clientWidth || 1;
+      const preW = pre.scrollWidth || 1;
+      const s = Math.min(1, wrapW / preW);
+      pre.style.transform = `scale(${s})`;
+      // Reserve scaled height so content below doesn't overlap
+      const rect = pre.getBoundingClientRect();
+      wrap.style.height = `${rect.height}px`;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(resize);
+      ro.observe(wrap);
+    }
+  }
   // Timer stepper interactions
   const TIMER_STEP_MS = 15000; // 15 seconds per step
   const TIMER_MAX_MS = 99 * 60 * 1000 + 59 * 1000; // 99:59
